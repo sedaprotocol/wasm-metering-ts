@@ -1,13 +1,15 @@
 const toolkit = require('warp-wasm-json-toolkit');
 const text2json = toolkit.text2json;
 const SECTION_IDS = require('./json2wasm').SECTION_IDS;
-const defaultCostTable = require('./defaultCostTable.json');
+const defaultCostTable = require('./default-cost-table.json');
+
+const test = {};
 
 // gets the cost of an operation for entry in a section from the cost table
 function getCost(json, costTable = {}, defaultCost = 0) {
     let cost = 0;
     // finds the default cost
-    defaultCost = costTable['DEFAULT'] !== undefined ? costTable['DEFAULT'] : 1875;
+    defaultCost = costTable['DEFAULT'] !== undefined ? costTable['DEFAULT'] : 0;
 
     if (Array.isArray(json)) {
         json.forEach((el) => {
@@ -25,6 +27,9 @@ function getCost(json, costTable = {}, defaultCost = 0) {
     } else {
         cost = costTable[json];
     }
+
+    test[cost] = test[cost] ? test[cost] + 1 : 1;
+
     return cost;
 }
 
@@ -46,17 +51,22 @@ function meterCodeEntry(entry, costTable, meterFuncIndex, meterType, cost) {
 
     // operations that can possible cause a branch
     const branchingOps = new Set([
-        'grow_memory',
+        // 'grow_memory', 
+        'loop',
         'end',
+        'else',
         'br',
         'br_table',
         'br_if',
-        'if',
-        'else',
+        "call",
+        "call_indirect",
+        // 'if', // wasmer excludes this for some reason, fixed in later versions..
         'return',
-        'loop',
+
+        // more 
+        // 'return_call_indirect',
     ]);
-    const meteringOverHead = meterTheMeteringStatement();
+    // const meteringOverHead = meterTheMeteringStatement();
     let code = entry.code.slice();
     let meteredCode = [];
 
@@ -68,6 +78,7 @@ function meterCodeEntry(entry, costTable, meterFuncIndex, meterType, cost) {
         // meters a segment of wasm code
         while (true) {
             const op = code[i++];
+            // console.log('[DEBUG]: op ::: ', op);
             remapOp(op, meterFuncIndex);
 
             cost += getCost(op.name, costTable.code);
@@ -79,12 +90,15 @@ function meterCodeEntry(entry, costTable, meterFuncIndex, meterType, cost) {
         // add the metering statement
         if (cost !== 0) {
             // add the cost of metering
-            cost += meteringOverHead;
+            // cost += meteringOverHead;
+            // cost -= meteringOverHead;
+            // console.log('[DEBUG]: cost ::: ', cost);
             meteredCode = meteredCode.concat(meteringStatement(cost, meterFuncIndex));
         }
 
-        // start a new segment
+                 // start a new segment
         meteredCode = meteredCode.concat(code.slice(0, i));
+       
         code = code.slice(i);
         cost = 0;
     }
@@ -202,6 +216,7 @@ exports.meterJSON = (json, opts) => {
                     const entry = section.entries[i];
                     const typeIndex = functionModule.entries[i];
                     const type = typeModule.entries[typeIndex];
+
                     const cost = getCost(type, costTable.type);
 
                     meterCodeEntry(entry, costTable.code, funcIndex, meterType, cost);
@@ -209,6 +224,8 @@ exports.meterJSON = (json, opts) => {
                 break;
         }
     }
+
+    console.log('[DEBUG]: test ::: ', test);
 
     return json;
 };
