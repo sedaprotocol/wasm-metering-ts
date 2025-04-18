@@ -3,22 +3,16 @@
   "workspaces": {
     "": {
       "name": "wasm-metering-ts",
-      "devDependencies": {
-        "@biomejs/biome": "1.9.4",
-        "@types/bun": "latest",
-      },
-      "peerDependencies": {
-        "typescript": "^5.7.3",
-      },
-    },
-    "packages/wasm-metering": {
-      "name": "@seda-protocol/wasm-metering",
       "dependencies": {
         "buffer-pipe": "^0.0.5",
         "leb128": "^0.0.5",
         "safe-buffer": "^5.2.1",
         "warp-isomorphic": "^1.0.7",
         "warp-wasm-metering": "^1.0.1",
+      },
+      "devDependencies": {
+        "@biomejs/biome": "1.9.4",
+        "@types/bun": "latest",
       },
       "peerDependencies": {
         "typescript": "^5.7.3",
@@ -45,8 +39,6 @@
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@1.9.4", "", { "os": "win32", "cpu": "x64" }, "sha512-8Y5wMhVIPaWe6jw2H+KlEm4wP/f7EW3810ZLmDlrEEy5KvBsb9ECEfu/kMWD484ijfQ8+nIi0giMgu9g1UAuuA=="],
 
     "@fastify/busboy": ["@fastify/busboy@2.1.1", "", {}, "sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA=="],
-
-    "@seda-protocol/wasm-metering": ["@seda-protocol/wasm-metering@workspace:packages/wasm-metering"],
 
     "@types/bun": ["@types/bun@1.2.3", "", { "dependencies": { "bun-types": "1.2.3" } }, "sha512-054h79ipETRfjtsCW9qJK8Ipof67Pw9bodFWmkfkaUaRiIQ1dIV2VTlheshlBx3mpKr0KeK8VqnMMCtgN9rQtw=="],
 

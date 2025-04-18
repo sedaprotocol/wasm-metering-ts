@@ -87,17 +87,45 @@ function meterCodeEntry(entry, costTable, meterFuncIndex, meterType, cost) {
             }
         }
 
+        let segment = code.slice(0, i);
+        // console.log('[DEBUG]: segment ::: ', segment);
+
         // add the metering statement
         if (cost !== 0) {
             // add the cost of metering
             // cost += meteringOverHead;
             // cost -= meteringOverHead;
             // console.log('[DEBUG]: cost ::: ', cost);
-            meteredCode = meteredCode.concat(meteringStatement(cost, meterFuncIndex));
+            const mStatement = meteringStatement(cost, meterFuncIndex);
+            // console.log('[DEBUG]: mStatement ::: ', mStatement);
+
+
+            // LOOK AT THIS PART FRANKLIN
+            // Mimic wasmer's behavior by inserting the metering statement before the last operation
+            const lastOp = segment.pop();
+            segment = segment.concat(mStatement);
+            segment.push(lastOp);
+            // console.log('[DEBUG]: meteredSegment ::: ', segment);
+            // meteredCode = meteredCode.concat(segment);
         }
 
-                 // start a new segment
-        meteredCode = meteredCode.concat(code.slice(0, i));
+
+        meteredCode = meteredCode.concat(segment); // add the metering statement
+
+        // if (cost !== 0) {
+        //     // add the cost of metering
+        //     // cost += meteringOverHead;
+        //     // cost -= meteringOverHead;
+        //     // console.log('[DEBUG]: cost ::: ', cost);
+        //     const mStatement = meteringStatement(cost, meterFuncIndex);
+        //     console.log('[DEBUG]: mStatement ::: ', mStatement);
+        //     meteredCode = meteredCode.concat(mStatement);
+        // }
+
+        //          // start a new segment
+        //          const segment = code.slice(0, i);
+        //          console.log('[DEBUG]: segment ::: ', segment);
+        // meteredCode = meteredCode.concat(segment);
        
         code = code.slice(i);
         cost = 0;
