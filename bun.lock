@@ -3,22 +3,14 @@
   "workspaces": {
     "": {
       "name": "wasm-metering-ts",
-      "devDependencies": {
-        "@biomejs/biome": "1.9.4",
-        "@types/bun": "latest",
-      },
-      "peerDependencies": {
-        "typescript": "^5.7.3",
-      },
-    },
-    "packages/wasm-metering": {
-      "name": "@seda-protocol/wasm-metering",
       "dependencies": {
         "buffer-pipe": "^0.0.5",
         "leb128": "^0.0.5",
-        "safe-buffer": "^5.2.1",
         "warp-isomorphic": "^1.0.7",
-        "warp-wasm-metering": "^1.0.1",
+      },
+      "devDependencies": {
+        "@biomejs/biome": "1.9.4",
+        "@types/bun": "latest",
       },
       "peerDependencies": {
         "typescript": "^5.7.3",
@@ -45,8 +37,6 @@
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@1.9.4", "", { "os": "win32", "cpu": "x64" }, "sha512-8Y5wMhVIPaWe6jw2H+KlEm4wP/f7EW3810ZLmDlrEEy5KvBsb9ECEfu/kMWD484ijfQ8+nIi0giMgu9g1UAuuA=="],
 
     "@fastify/busboy": ["@fastify/busboy@2.1.1", "", {}, "sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA=="],
-
-    "@seda-protocol/wasm-metering": ["@seda-protocol/wasm-metering@workspace:packages/wasm-metering"],
 
     "@types/bun": ["@types/bun@1.2.3", "", { "dependencies": { "bun-types": "1.2.3" } }, "sha512-054h79ipETRfjtsCW9qJK8Ipof67Pw9bodFWmkfkaUaRiIQ1dIV2VTlheshlBx3mpKr0KeK8VqnMMCtgN9rQtw=="],
 
@@ -78,26 +68,6 @@
 
     "warp-isomorphic": ["warp-isomorphic@1.0.7", "", { "dependencies": { "buffer": "^6.0.3", "undici": "^5.19.1" } }, "sha512-fXHbUXwdYqPm9fRPz8mjv5ndPco09aMQuTe4kXfymzOq8V6F3DLsg9cIafxvjms9/mc6eijzkLBJ63yjEENEjA=="],
 
-    "warp-wasm-json-toolkit": ["warp-wasm-json-toolkit@1.0.2", "", { "dependencies": { "buffer-pipe": "0.0.3", "leb128": "0.0.4", "warp-isomorphic": "1.0.0" }, "bin": { "json2wasm": "bin/json2wasm", "wasm2json": "bin/wasm2json" } }, "sha512-T6pKJz9mO0ZFYiu4jB2v8j8t8Cw21n/+uFh0QKbc/7cJSssGd3I26sV/VXjoDbGuG7bGzK9BewlFd+ukvxABOA=="],
-
-    "warp-wasm-metering": ["warp-wasm-metering@1.0.1", "", { "dependencies": { "leb128": "^0.0.4", "warp-wasm-json-toolkit": "1.0.2" }, "bin": { "wasm-meter": "bin/wasm-meter" } }, "sha512-s2NtOPTGIDPWeDKyrY5UiUUf3oOjbjwGF9sgmRR3nqXzjxdgppvuf+6VYquzYM3xRMXIOq+AWMK2H/D/Yv+4tg=="],
-
     "leb128/buffer-pipe": ["buffer-pipe@0.0.3", "", { "dependencies": { "safe-buffer": "^5.1.2" } }, "sha512-GlxfuD/NrKvCNs0Ut+7b1IHjylfdegMBxQIlZHj7bObKVQBxB5S84gtm2yu1mQ8/sSggceWBDPY0cPXgvX2MuA=="],
-
-    "warp-wasm-json-toolkit/buffer-pipe": ["buffer-pipe@0.0.3", "", { "dependencies": { "safe-buffer": "^5.1.2" } }, "sha512-GlxfuD/NrKvCNs0Ut+7b1IHjylfdegMBxQIlZHj7bObKVQBxB5S84gtm2yu1mQ8/sSggceWBDPY0cPXgvX2MuA=="],
-
-    "warp-wasm-json-toolkit/leb128": ["leb128@0.0.4", "", { "dependencies": { "bn.js": "^4.11.6", "buffer-pipe": "0.0.0" } }, "sha512-2zejk0fCIgY8RVcc/KzvyfpDio5Oo8HgPZmkrOmdwmbk0KpKpgD+JKwikxKk8cZYkANIhwHK50SNukkCm3XkCQ=="],
-
-    "warp-wasm-json-toolkit/warp-isomorphic": ["warp-isomorphic@1.0.0", "", { "dependencies": { "buffer": "^6.0.3", "undici": "^5.8.0" } }, "sha512-E+9+brlrnZoNpNvpz8foIZiCk9fIVukRBZYEy/yefM+oAG+zNgDPb/xNaZyUJWC8rSZxE1DqrhRl0JxjtLVltA=="],
-
-    "warp-wasm-metering/leb128": ["leb128@0.0.4", "", { "dependencies": { "bn.js": "^4.11.6", "buffer-pipe": "0.0.0" } }, "sha512-2zejk0fCIgY8RVcc/KzvyfpDio5Oo8HgPZmkrOmdwmbk0KpKpgD+JKwikxKk8cZYkANIhwHK50SNukkCm3XkCQ=="],
-
-    "warp-wasm-json-toolkit/leb128/bn.js": ["bn.js@4.12.1", "", {}, "sha512-k8TVBiPkPJT9uHLdOKfFpqcfprwBFOAAXXozRubr7R7PfIuKvQlzcI4M0pALeqXN09vdaMbUdUj+pass+uULAg=="],
-
-    "warp-wasm-json-toolkit/leb128/buffer-pipe": ["buffer-pipe@0.0.0", "", { "dependencies": { "safe-buffer": "^5.1.1" } }, "sha512-PvKbsvQOH4dcUyUEvQQSs3CIkkuPcOHt3gKnXwf4HsPKFDxSN7bkmICVIWgOmW/jx/fAEGGn4mIayIJPLs7G8g=="],
-
-    "warp-wasm-metering/leb128/bn.js": ["bn.js@4.12.1", "", {}, "sha512-k8TVBiPkPJT9uHLdOKfFpqcfprwBFOAAXXozRubr7R7PfIuKvQlzcI4M0pALeqXN09vdaMbUdUj+pass+uULAg=="],
-
-    "warp-wasm-metering/leb128/buffer-pipe": ["buffer-pipe@0.0.0", "", { "dependencies": { "safe-buffer": "^5.1.1" } }, "sha512-PvKbsvQOH4dcUyUEvQQSs3CIkkuPcOHt3gKnXwf4HsPKFDxSN7bkmICVIWgOmW/jx/fAEGGn4mIayIJPLs7G8g=="],
   }
 }

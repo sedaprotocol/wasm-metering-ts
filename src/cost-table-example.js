@@ -4,6 +4,9 @@ const GAS_ACCOUNTING_MULTIPLIER = 3_000;
 const GAS_ACCOUNTING_OPCODE = GAS_PER_OPRATION * GAS_ACCOUNTING_MULTIPLIER;
 
 export const costTable = {
+	memory: {
+		maximum: 200,
+	},
 	start: 1,
 	type: {
 		params: {

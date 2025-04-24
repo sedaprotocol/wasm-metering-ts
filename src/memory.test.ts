@@ -1,21 +1,26 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { resolve } from "node:path";
 import { meterWasm } from ".";
+import { costTable } from "./cost-table-example.js";
 
 describe("memory", () => {
-    it("should replace memory exports with imports", async () => {
-        const wasmBytes = await Bun.file(resolve(import.meta.dir, "../assign_too_much_memory.wasm")).bytes();
-        const result = meterWasm(Buffer.from(wasmBytes));
+	it("should fail to instantiate when it exceeds the memory limit", async () => {
+		const wasmBytes = await Bun.file(
+			resolve(import.meta.dir, "../assign_too_much_memory.wasm"),
+		).bytes();
+		const result = meterWasm(Buffer.from(wasmBytes), costTable);
 
-        // Ensure that the WASM module is still valid
-        const module = new WebAssembly.Module(result);
+		// Ensure that the WASM module throws an error when trying to instantiate
+		expect(() => new WebAssembly.Module(result)).toThrow();
+	});
 
-        console.log('[DEBUG]: module ::: ', module);
-    });
+	it("should replace memory exports with imports even if it exists", async () => {
+		const wasmBytes = await Bun.file(
+			resolve(import.meta.dir, "../import_memory_from_env.wasm"),
+		).bytes();
+		const result = meterWasm(Buffer.from(wasmBytes), costTable);
 
-    it("should replace memory exports with imports even if it exists", async () => {
-        const wasmBytes = await Bun.file(resolve(import.meta.dir, "../import_memory_from_env.wasm")).bytes();
-        const result = meterWasm(Buffer.from(wasmBytes));
-
-    });
+		// Ensure that the WASM module is valid
+		expect(() => new WebAssembly.Module(result)).not.toThrow();
+	});
 });

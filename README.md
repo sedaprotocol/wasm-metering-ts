@@ -1,10 +1,8 @@
-# aldea-js-wasm-metering
+# js-wasm-metering
 
 Simple wasm metering.
 
-This is a fork of https://www.npmjs.com/package/@aldea/wasm-metering?activeTab=readme with some modifications to make more truncate opcodes work
-This is just a wraper around https://github.com/warp-contracts/warp-wasm-metering, which
-is also an adaptation over https://github.com/warp-contracts/warp-wasm-metering. 
+This is a fork of https://www.npmjs.com/package/@aldea/wasm-metering?activeTab=readme with some modifications to make more truncate opcodes work. This in turn is just a wrapper around https://github.com/warp-contracts/warp-wasm-metering, but we moved most of the code inside this repository.
 
 There is also code adapted from https://github.com/warp-contracts/warp-wasm-json-toolkit.
 

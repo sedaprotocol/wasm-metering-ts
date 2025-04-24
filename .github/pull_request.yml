@@ -1,0 +1,38 @@
+name: Pull request checks
+
+on:
+  pull_request:
+    push:
+      branches:
+        - main
+
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 📥 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.10
+
+      - name: 📥 Install dependencies
+        run: bun install --frozen-lockfile
+
+      # TODO: uncomment when we cleaned up the code
+      # - name: 📋 Check formatting Biome
+      #   run: bunx biome check .
+
+      - name: 🧪 Run unit tests
+        run: bun run test
