@@ -34,7 +34,7 @@ const EXTERNAL_KIND = (json2wasm.EXTERNAL_KIND = {
 	global: 3,
 });
 
-const SECTION_IDS = (json2wasm.SECTION_IDS = {
+export const SECTION_IDS = (json2wasm.SECTION_IDS = {
 	custom: 0,
 	type: 1,
 	import: 2,
