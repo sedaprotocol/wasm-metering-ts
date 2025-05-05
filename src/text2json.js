@@ -1,6 +1,6 @@
-const immediates = require("./immediates.js").OP_IMMEDIATES;
+import { OP_IMMEDIATES as immediates } from "./immediates.js";
 
-module.exports = (text) => {
+export function text2json(text) {
 	const json = [];
 	const textArray = text.split(/\s|\n/);
 	while (textArray.length) {
@@ -27,7 +27,7 @@ module.exports = (text) => {
 		json.push(jsonOp);
 	}
 	return json;
-};
+}
 
 function immediataryParser(type, txt) {
 	const json = {};

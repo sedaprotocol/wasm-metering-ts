@@ -8,13 +8,12 @@
 		"fmt": "bunx biome check --write ."
 	},
 	"dependencies": {
-		"buffer-pipe": "^0.0.5",
-		"leb128": "^0.0.5",
-		"warp-isomorphic": "^1.0.7"
+		"leb128": "^0.0.5"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
-		"@types/bun": "latest"
+		"@types/bun": "latest",
+		"@types/leb128": "^0.0.0"
 	},
 	"peerDependencies": {
 		"typescript": "^5.7.3"
