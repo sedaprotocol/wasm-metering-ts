@@ -1,5 +1,4 @@
 import { SECTION_IDS } from "./json2wasm.js";
-import { text2json } from "./text2json.js";
 
 // gets the cost of an operation for entry in a section from the cost table
 function getCost(json, costTable = {}, defaultCost = 0) {
@@ -31,18 +30,54 @@ function getCost(json, costTable = {}, defaultCost = 0) {
 function meterCodeEntry(entry, costTable, cost, meterIndex, exhaustedIndex) {
 	// Generate the metering opcodes similar to how Wasmer does it.
 	function meteringStatement(accumulatedCost) {
-		return text2json(`get_global ${meterIndex}`)
-			.concat(text2json(`i64.const ${accumulatedCost}`))
-			.concat(text2json("i64.lt_u"))
-			.concat([{ name: "if", immediates: "block_type" }])
-			.concat(text2json("i32.const 1"))
-			.concat(text2json(`set_global ${exhaustedIndex}`))
-			.concat(text2json("unreachable"))
-			.concat(text2json("end"))
-			.concat(text2json(`get_global ${meterIndex}`))
-			.concat(text2json(`i64.const ${accumulatedCost}`))
-			.concat(text2json("i64.sub"))
-			.concat(text2json(`set_global ${meterIndex}`));
+		return [
+			{
+				name: "get_global",
+				immediates: `${meterIndex}`,
+			},
+			{
+				return_type: "i64",
+				name: "const",
+				immediates: `${accumulatedCost}`,
+			},
+			{
+				return_type: "i64",
+				name: "lt_u",
+			},
+			{ name: "if", immediates: "block_type" },
+			{
+				return_type: "i32",
+				name: "const",
+				immediates: "1",
+			},
+			{
+				name: "set_global",
+				immediates: `${exhaustedIndex}`,
+			},
+			{
+				name: "unreachable",
+			},
+			{
+				name: "end",
+			},
+			{
+				name: "get_global",
+				immediates: `${meterIndex}`,
+			},
+			{
+				return_type: "i64",
+				name: "const",
+				immediates: `${accumulatedCost}`,
+			},
+			{
+				return_type: "i64",
+				name: "sub",
+			},
+			{
+				name: "set_global",
+				immediates: `${meterIndex}`,
+			},
+		];
 	}
 
 	// operations that can possible cause a branch
