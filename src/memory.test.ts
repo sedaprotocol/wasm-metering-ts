@@ -23,4 +23,26 @@ describe("memory", () => {
 		// Ensure that the WASM module is valid
 		expect(() => new WebAssembly.Module(result)).not.toThrow();
 	});
+
+	it("should be fast", async () => {
+		const wasmBytes = await Bun.file(
+			resolve(import.meta.dir, "../import_memory_from_env.wasm"),
+		).bytes();
+
+		let result: Buffer;
+		let totalTime = 0;
+
+		for (let i = 0; i < 1000; i++) {
+			const start = performance.now();
+			result = meterWasm(Buffer.from(wasmBytes), costTable);
+			const end = performance.now();
+			totalTime += end - start;
+		}
+
+		const avgTime = totalTime / 1000;
+
+		// Ensure that the WASM module is valid
+		expect(() => new WebAssembly.Module(result)).not.toThrow();
+		expect(avgTime).toBeLessThan(0.3);
+	});
 });

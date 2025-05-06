@@ -1,12 +1,11 @@
-import Stream from "buffer-pipe";
 import leb from "leb128";
 /**
  * This code is an adaptation over https://github.com/warp-contracts/warp-wasm-json-toolkit/blob/main/json2wasm.js.
  *
  * License: MPL-2.0
  */
-import { Buffer } from "warp-isomorphic";
 import { OP_IMMEDIATES } from "./immediates.js";
+import { PreallocatedBuffer } from "./preallocated-buffer";
 
 const json2wasm = (json) => {
 	return json2wasm.generate(json).buffer;
@@ -265,7 +264,7 @@ json2wasm.typeGenerators = {
 	/**
 	 * Generates a [resizable_limits](https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#resizable_limits)
 	 * @param {Object} json
-	 * @param {Stream} stream
+	 * @param {PreallocatedBuffer} stream
 	 */
 	memory: (json, stream) => {
 		leb.unsigned.write(Number(json.maximum !== undefined), stream); // the flags
@@ -337,7 +336,7 @@ json2wasm.immediataryGenerators = {
 };
 
 const entryGenerators = {
-	type: (entry, stream = new Stream()) => {
+	type: (entry, stream = new PreallocatedBuffer()) => {
 		// a single type entry binary encoded
 		stream.write([LANGUAGE_TYPES[entry.form]]); // the form
 
@@ -354,28 +353,28 @@ const entryGenerators = {
 		}
 		return stream.buffer;
 	},
-	import: (entry, stream = new Stream()) => {
+	import: (entry, stream = new PreallocatedBuffer()) => {
 		// write the module string
 		leb.unsigned.write(entry.moduleStr.length, stream);
-		stream.write(entry.moduleStr);
+		stream.write(Buffer.from(entry.moduleStr));
 		// write the field string
 		leb.unsigned.write(entry.fieldStr.length, stream);
-		stream.write(entry.fieldStr);
+		stream.write(Buffer.from(entry.fieldStr));
 		stream.write([EXTERNAL_KIND[entry.kind]]);
 		json2wasm.typeGenerators[entry.kind](entry.type, stream);
 	},
-	function: (entry, stream = new Stream()) => {
+	function: (entry, stream = new PreallocatedBuffer()) => {
 		leb.unsigned.write(entry, stream);
 		return stream.buffer;
 	},
 	table: json2wasm.typeGenerators.table,
-	global: (entry, stream = new Stream()) => {
+	global: (entry, stream = new PreallocatedBuffer()) => {
 		json2wasm.typeGenerators.global(entry.type, stream);
 		json2wasm.typeGenerators.initExpr(entry.init, stream);
 		return stream;
 	},
 	memory: json2wasm.typeGenerators.memory,
-	export: (entry, stream = new Stream()) => {
+	export: (entry, stream = new PreallocatedBuffer()) => {
 		const fieldStr = Buffer.from(entry.field_str);
 		const strLen = fieldStr.length;
 		leb.unsigned.write(strLen, stream);
@@ -384,7 +383,7 @@ const entryGenerators = {
 		leb.unsigned.write(entry.index, stream);
 		return stream;
 	},
-	element: (entry, stream = new Stream()) => {
+	element: (entry, stream = new PreallocatedBuffer()) => {
 		leb.unsigned.write(entry.index, stream);
 		json2wasm.typeGenerators.initExpr(entry.offset, stream);
 		leb.unsigned.write(entry.elements.length, stream);
@@ -394,24 +393,24 @@ const entryGenerators = {
 
 		return stream;
 	},
-	code: (entry, stream = new Stream()) => {
-		const codeStream = new Stream();
+	code: (entry, stream = new PreallocatedBuffer()) => {
+		const codePreallocatedBuffer = new PreallocatedBuffer();
 		// write the locals
-		leb.unsigned.write(entry.locals.length, codeStream);
+		leb.unsigned.write(entry.locals.length, codePreallocatedBuffer);
 		for (const local of entry.locals) {
-			leb.unsigned.write(local.count, codeStream);
-			codeStream.write([LANGUAGE_TYPES[local.type]]);
+			leb.unsigned.write(local.count, codePreallocatedBuffer);
+			codePreallocatedBuffer.write([LANGUAGE_TYPES[local.type]]);
 		}
 		// write opcode
 		for (const op of entry.code) {
-			json2wasm.generateOp(op, codeStream);
+			json2wasm.generateOp(op, codePreallocatedBuffer);
 		}
 
-		leb.unsigned.write(codeStream.bytesWrote, stream);
-		stream.write(codeStream.buffer);
+		leb.unsigned.write(codePreallocatedBuffer.bytesWrote, stream);
+		stream.write(codePreallocatedBuffer.buffer);
 		return stream;
 	},
-	data: (entry, stream = new Stream()) => {
+	data: (entry, stream = new PreallocatedBuffer()) => {
 		leb.unsigned.write(entry.index, stream);
 		json2wasm.typeGenerators.initExpr(entry.offset, stream);
 		leb.unsigned.write(entry.data.length, stream);
@@ -422,9 +421,9 @@ const entryGenerators = {
 
 json2wasm.entryGenerators = entryGenerators;
 
-json2wasm.generateSection = (json, stream = new Stream()) => {
+json2wasm.generateSection = (json, stream = new PreallocatedBuffer()) => {
 	const name = json.name;
-	const payload = new Stream();
+	const payload = new PreallocatedBuffer();
 	stream.write([SECTION_IDS[name]]);
 
 	if (name === "custom") {
@@ -446,7 +445,7 @@ json2wasm.generateSection = (json, stream = new Stream()) => {
 	return stream;
 };
 
-json2wasm.generate = (json, stream = new Stream()) => {
+json2wasm.generate = (json, stream = new PreallocatedBuffer()) => {
 	const [preamble, ...rest] = json;
 	json2wasm.generatePreramble(preamble, stream);
 	for (const item of rest) {
@@ -456,13 +455,13 @@ json2wasm.generate = (json, stream = new Stream()) => {
 	return stream;
 };
 
-json2wasm.generatePreramble = (json, stream = new Stream()) => {
+json2wasm.generatePreramble = (json, stream = new PreallocatedBuffer()) => {
 	stream.write(json.magic);
 	stream.write(json.version);
 	return stream;
 };
 
-json2wasm.generateOp = (json, stream = new Stream()) => {
+json2wasm.generateOp = (json, stream = new PreallocatedBuffer()) => {
 	let name = json.name;
 	// if (name.includes('trunc')) {
 	//   console.log('name', name)
